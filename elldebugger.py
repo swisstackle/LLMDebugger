@@ -44,7 +44,7 @@ def main():
     # Detect errors in the script
     error = detect_error(script_path)
     
-    assist_debugger_main(error, script_path, numbered_script)
+    assist_debugger(error, script_path, script)
 
 if __name__ == "__main__":
     main()

@@ -1,33 +1,85 @@
-import ell
-@ell.simple(model="gpt-4o")
-def generate_next_command(error_message: str, script_path: str, script: str, last_command_output: str) -> str:
-    """
-    Generate the next pdb command based on the latest output.
-    """
-    prompt = (
-        f"Error Message:\n{error_message}\n\n"
-        f"Script:\n{script}\n\n"
-        f"Last Command Output:\n{last_command_output}\n\n"
-        "Provide the next pdb command to debug the error. Only provide a single pdb command without explanations."
-    )
-    return prompt
+import ast
 
+def get_variable_names(script: str) -> list:
+    """
+    Parse the script and extract variable names from assignments.
+    """
+    class VariableVisitor(ast.NodeVisitor):
+        def __init__(self):
+            self.variables = set()
+
+        def visit_Assign(self, node):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self.variables.add(target.id)
+                elif isinstance(target, ast.Tuple):
+                    for elem in target.elts:
+                        if isinstance(elem, ast.Name):
+                            self.variables.add(elem.id)
+            self.generic_visit(node)
+
+        def visit_AugAssign(self, node):
+            target = node.target
+            if isinstance(target, ast.Name):
+                self.variables.add(target.id)
+            self.generic_visit(node)
+
+        def visit_AnnAssign(self, node):
+            target = node.target
+            if isinstance(target, ast.Name):
+                self.variables.add(target.id)
+            self.generic_visit(node)
+
+    tree = ast.parse(script)
+    visitor = VariableVisitor()
+    visitor.visit(tree)
+    return list(visitor.variables)
+
+def get_all_executable_lines(script: str) -> list:
+    """
+    Retrieve all executable lines in the script.
+    """
+    tree = ast.parse(script)
+    executable_lines = set()
+    for node in ast.walk(tree):
+        if hasattr(node, 'lineno') and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            executable_lines.add(node.lineno)
+    return sorted(executable_lines)
+
+def get_starting_line(tree: ast.AST) -> int:
+    """
+    Retrieve the first executable line in the script.
+    """
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue  # Skip definitions
+        if hasattr(node, 'lineno'):
+            return node.lineno
+    return 1  # Default to line 1 if not found
 
 def generate_commands(error_message: str, script_path: str, script: str) -> str:
     """
-    Set breakpoints at every executable line and print all variables at each breakpoint.
+    Set breakpoints at all executable lines and generate commands to step through lines and print variables.
     """
     pdb_commands = []
-    lines = script.split('\n')
-    for i, line in enumerate(lines, start=1):
-        # Skip empty lines and comments
-        if line.strip() and not line.strip().startswith('#'):
-            # Set breakpoint
-            pdb_commands.append(f"break {script_path}:{i}")
-            # Define commands for the breakpoint
-            pdb_commands.append("commands")
-            pdb_commands.append("    p globals()")
-            pdb_commands.append("    p locals()")
-            pdb_commands.append("    continue")
-            pdb_commands.append("end")
+    variable_names = get_variable_names(script)
+
+    # Determine all executable lines
+    executable_lines = get_all_executable_lines(script)
+
+    # Set a breakpoint at the starting line
+    starting_line = get_starting_line(ast.parse(script))
+    pdb_commands.append(f"break {script_path}:{starting_line}")
+
+    for line in executable_lines:
+        # Step into the line first
+        pdb_commands.append("step")
+        
+        # Then print current file and line number
+        pdb_commands.append(f"print('Current file: {script_path}, Line number: {line}')")
+        
+        # Then print each variable's value
+        for var in variable_names:
+            pdb_commands.append(f"p {var}")  # Print each variable
+
     return '\n'.join(pdb_commands)

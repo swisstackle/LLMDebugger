@@ -1,8 +1,6 @@
 import ell
 from generate_commands import generate_commands
 from auto_pdb import AutoPdb
-import runpy  # Ensure runpy is imported
-import sys
 
 @ell.simple(model="gpt-4o-mini")
 def assist_debugger(error_message: str, script_path: str, script: str) -> str:
@@ -16,7 +14,7 @@ def assist_debugger(error_message: str, script_path: str, script: str) -> str:
     print("Generated Pdb Commands:\n", pdb_commands)
     
     # Initialize AutoPdb with the generated commands
-    pdb = AutoPdb(pdb_commands.split('\n'))
+    pdb = AutoPdb(pdb_commands)
     pdb.run_path(script_path)
     output = pdb.get_output()
     

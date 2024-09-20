@@ -3,5 +3,5 @@ def divide(a, b):
     b = b
     return a / b
 
-result = divide(10, 0)  # Intentional ZeroDivisionError
+result = divide(10, 2)  # Intentional ZeroDivisionError
 print(result)
