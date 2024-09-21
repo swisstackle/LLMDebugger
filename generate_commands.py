@@ -72,7 +72,7 @@ def generate_commands(error_message: str, script_path: str, script: str) -> str:
     pdb_commands.append(f"break {script_path}:{starting_line}")
     pdb_commands.append(f"c")
 
-    for line in executable_lines:
+    for _ in executable_lines:
         # Step into the line first
         pdb_commands.append("step")
         pdb_commands.append("w")
