@@ -50,12 +50,11 @@ def get_starting_line(tree: ast.AST) -> int:
     """
     Retrieve the first executable line in the script.
     """
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            continue  # Skip definitions
-        if hasattr(node, 'lineno'):
-            return node.lineno
-    return 1  # Default to line 1 if not found
+    for node in tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if hasattr(node, 'lineno'):
+                return node.lineno  # Return the first executable top-level line found
+    return 1  # Default to line 1 if only definitions are present
 
 def generate_commands(error_message: str, script_path: str, script: str) -> str:
     """
