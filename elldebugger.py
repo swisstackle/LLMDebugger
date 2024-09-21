@@ -30,11 +30,6 @@ def detect_error(script_path: str) -> str:
     except subprocess.CalledProcessError as e:
         return e.stderr  # Return the error message
 
-@ell.simple(model="gpt-4o-mini")
-def assist_debugger_main(error_message: str, script_path: str, numbered_script: str) -> str:
-    """Invoke the automated debugger assistant."""
-    return assist_debugger(error_message, script_path, numbered_script)
-
 def main():
     parser = argparse.ArgumentParser(description="Debug a Python script.")
     parser.add_argument("script_path", help="Path to the script to debug.")
