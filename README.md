@@ -3,7 +3,7 @@
 
 ## Description
 
-This repositorie's goal is to teach LLM's how to debug Python code. It does so by generating pdb commands based on the code structure and error message and then feeding the results to an LLM to generate a report.
+This repository's goal is to teach LLM's how to debug Python code. It does so by generating pdb commands based on the code structure and error message and then feeding the results to an LLM to generate a report.
 Currently, it only generates and executes the commands but does not feed the results to an LLM yet.
 
 
