@@ -37,7 +37,8 @@ def assist_debugger_main(error_message: str, script_path: str, numbered_script: 
 def main():
     script_path = "testscript.py"
     # We will create a line numbered version of the script to pass to the LLM
-    script = open(script_path, 'r').read()
+    with open(script_path, 'r') as f:
+        script = f.read()
     lines = script.split('\n')
     numbered_script = "\n".join([f"{i+1}: {line}" for i, line in enumerate(lines)])
     print(numbered_script + "\n")
