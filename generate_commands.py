@@ -75,7 +75,7 @@ def generate_commands(error_message: str, script_path: str, script: str) -> str:
     for line in executable_lines:
         # Step into the line first
         pdb_commands.append("step")
-        pdb_commands.append(f"w")
+        pdb_commands.append("w")
         
         for var in variable_names:
             pdb_commands.append(f"p {var}")  # Print each variable
