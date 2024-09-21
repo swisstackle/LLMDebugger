@@ -1,6 +1,5 @@
 import pdb
 import sys
-import traceback
 
 class AutoPdb(pdb.Pdb):
     def __init__(self, commands, *args, **kwargs):
