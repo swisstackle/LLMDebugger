@@ -70,15 +70,13 @@ def generate_commands(error_message: str, script_path: str, script: str) -> str:
     # Set a breakpoint at the starting line
     starting_line = get_starting_line(ast.parse(script))
     pdb_commands.append(f"break {script_path}:{starting_line}")
+    pdb_commands.append(f"c")
 
     for line in executable_lines:
         # Step into the line first
         pdb_commands.append("step")
+        pdb_commands.append(f"w")
         
-        # Then print current file and line number
-        pdb_commands.append(f"print('Current file: {script_path}, Line number: {line}')")
-        
-        # Then print each variable's value
         for var in variable_names:
             pdb_commands.append(f"p {var}")  # Print each variable
 
