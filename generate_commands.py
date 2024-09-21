@@ -70,7 +70,7 @@ def generate_commands(error_message: str, script_path: str, script: str) -> str:
     # Set a breakpoint at the starting line
     starting_line = get_starting_line(ast.parse(script))
     pdb_commands.append(f"break {script_path}:{starting_line}")
-    pdb_commands.append(f"c")
+    pdb_commands.append("c")
 
     for _ in executable_lines:
         # Step into the line first
