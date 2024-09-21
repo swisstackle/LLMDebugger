@@ -18,7 +18,7 @@ def detect_error(script_path: str) -> str:
     """Monitor the execution of a Python script and capture error messages."""
     try:
         # Execute the script
-        result = subprocess.run(
+        subprocess.run(
             ["python", script_path],
             check=True,
             stdout=subprocess.PIPE,
