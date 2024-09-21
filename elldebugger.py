@@ -3,6 +3,7 @@ from openai import Client
 import os
 import subprocess
 from debugger_assistant import assist_debugger
+import argparse
 
 
 # Initialize OpenAI client with environment variable
@@ -35,7 +36,10 @@ def assist_debugger_main(error_message: str, script_path: str, numbered_script: 
     return assist_debugger(error_message, script_path, numbered_script)
 
 def main():
-    script_path = "testscript.py"
+    parser = argparse.ArgumentParser(description="Debug a Python script.")
+    parser.add_argument("script_path", help="Path to the script to debug.")
+    args = parser.parse_args()
+    script_path = args.script_path
     # We will create a line numbered version of the script to pass to the LLM
     with open(script_path, 'r') as f:
         script = f.read()
