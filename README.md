@@ -38,7 +38,7 @@ Currently, it only generates and executes the commands but does not feed the res
 
 2. **Run the Ell Debugger**
    
-   Use the `debugger_assistant.py` to analyze the error and automate the debugging process.
+   Use the `elldebugger.py` to analyze the error and automate the debugging process.
    
    ```bash
    python elldebugger.py testscript.py
