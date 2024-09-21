@@ -1,5 +1,5 @@
 
-# Automated PDB Debugger Assistant
+# Automated LLM based PDB Debugger Assistant
 
 ## Description
 
