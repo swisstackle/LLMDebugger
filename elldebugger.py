@@ -14,7 +14,6 @@ if not openai_api_key:
 openai_client = Client(api_key=openai_api_key)
 ell.init(default_openai_client=openai_client, store='./logdir', autocommit=True, verbose=True)
 
-@ell.simple(model="gpt-4o-mini")
 def detect_error(script_path: str) -> str:
     """Monitor the execution of a Python script and capture error messages."""
     try:

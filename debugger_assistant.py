@@ -2,7 +2,6 @@ import ell
 from generate_commands import generate_commands
 from auto_pdb import AutoPdb
 
-@ell.simple(model="gpt-4o-mini")
 def assist_debugger(error_message: str, script_path: str, script: str) -> str:
     """
     Analyze the error message and automate pdb debugging by executing generated commands.

@@ -10,7 +10,7 @@ class TestGetStartingLine(unittest.TestCase):
 
     def test_empty_script(self):
         script = ""
-        self.parse_and_test(script, 1)
+        self.parse_and_test(script, -1)
 
     def test_only_definitions(self):
         script = """def foo():
@@ -20,7 +20,7 @@ class Bar:
     def method(self):
         pass
 """
-        self.parse_and_test(script, 1)
+        self.parse_and_test(script, -1)
 
     def test_starting_executable_line(self):
         script = """

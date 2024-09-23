@@ -1,4 +1,5 @@
 import ast
+import sys
 
 def get_variable_names(script: str) -> list:
     """
@@ -38,12 +39,24 @@ def get_variable_names(script: str) -> list:
 def get_all_executable_lines(script: str) -> list:
     """
     Retrieve all executable lines in the script.
+
+    Returns:
+        A sorted list of line numbers, allowing duplicates for multiple executable
+        statements on the same line.
     """
     tree = ast.parse(script)
-    executable_lines = set()
+    executable_lines = []
     for node in ast.walk(tree):
-        if hasattr(node, 'lineno') and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            executable_lines.add(node.lineno)
+        if hasattr(node, 'lineno') and not isinstance(
+            node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Pass, ast.ClassDef)
+        ):
+            executable_lines.append(node.lineno)
+            print(
+                "Node Name:", node.__class__.__name__,
+                "\nCalled by:", sys._getframe(2).f_code.co_name,
+                "\nLine Number:", node.lineno,
+                flush=True
+            )
     return sorted(executable_lines)
 
 def get_starting_line(tree: ast.AST) -> int:
@@ -51,10 +64,10 @@ def get_starting_line(tree: ast.AST) -> int:
     Retrieve the first executable line in the script.
     """
     for node in tree.body:
-        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Pass, ast.arg, ast.Pass)):
             if hasattr(node, 'lineno'):
                 return node.lineno  # Return the first executable top-level line found
-    return 1  # Default to line 1 if only definitions are present
+    return -1  # Default to line 1 if only definitions are present
 
 def generate_commands(error_message: str, script_path: str, script: str) -> str:
     """
@@ -69,15 +82,21 @@ def generate_commands(error_message: str, script_path: str, script: str) -> str:
     # Set a breakpoint at the starting line
     starting_line = get_starting_line(ast.parse(script))
     pdb_commands.append(f"break {script_path}:{starting_line}")
-    if(starting_line != 1):
+    if starting_line == -1:
+        raise Exception("No top-level starting line found.")
+    if starting_line != 1:
         pdb_commands.append("c")
 
-    for _ in executable_lines:
-        # Step into the line first
+    for line in executable_lines:
+        # Step into the line
         pdb_commands.append("step")
-        pdb_commands.append("w")
+        # Print the current line being executed
+        pdb_commands.append("list .")
         
         for var in variable_names:
             pdb_commands.append(f"p {var}")  # Print each variable
+            
+    # Automatically quit after stepping through all executable lines
+    pdb_commands.extend(["q", "q", "q"])
 
     return '\n'.join(pdb_commands)
