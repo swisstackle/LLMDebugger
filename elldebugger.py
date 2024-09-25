@@ -63,7 +63,7 @@ def insert_trace_code(original_script: str, script_path: str, project_files: lis
     project_files_list = repr([os.path.abspath(path) for path in project_files])
 
     # Escape backslashes in report_path
-    escaped_report_path = report_path.replace('\\', '\\\\')
+    escaped_report_path = repr(report_path)
 
     custom_trace_code = f"""
 import sys
@@ -72,7 +72,7 @@ import linecache
 import os
 
 project_files = {project_files_list}
-report_path = '{escaped_report_path}'
+report_path = {escaped_report_path}
 global report_file
 report_file = open(report_path, 'a')
 
