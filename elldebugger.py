@@ -123,13 +123,13 @@ def main():
     # Insert trace code into the original script
     insert_trace_code(original_script, script_path, project_files, report_path)
 
-    # Execute the modified script
-    error = detect_error(script_path)
-
-    print(error)
-
-    # Restore the original script from backup
-    shutil.move(f"{script_path}.bak", script_path)
+    try:
+        # Execute the modified script
+        error = detect_error(script_path)
+        print(error)
+    finally:
+        # Restore the original script from backup
+        shutil.move(f"{script_path}.bak", script_path)
 
 if __name__ == "__main__":
     main()
