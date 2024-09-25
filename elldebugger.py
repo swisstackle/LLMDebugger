@@ -40,7 +40,9 @@ def collect_project_files(project_dir: str) -> list:
     Returns:
         list: List of file paths.
     """
-    return glob.glob(os.path.join(project_dir, '**/*.py'), recursive=True)
+    pattern = os.path.join(glob.escape(project_dir), '**', '*.py')
+    return glob.glob(pattern, recursive=True)
+
 
 def insert_trace_code(original_script: str, script_path: str, project_files: list, report_path: str) -> None:
     """
