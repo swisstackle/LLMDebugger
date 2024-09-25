@@ -73,6 +73,8 @@ import os
 
 project_files = {project_files_list}
 report_path = '{escaped_report_path}'
+global report_file
+report_file = open(report_path, 'a')
 
 def custom_trace(frame, event, arg):
     if event == 'line' and os.path.abspath(frame.f_code.co_filename) in project_files:
@@ -80,17 +82,17 @@ def custom_trace(frame, event, arg):
         lineno = frame.f_lineno
         line = linecache.getline(filename, lineno).strip()
         local_vars = frame.f_locals
-        with open(report_path, 'a') as f:
-            f.write(f"Line {{lineno}}: {{line}}\\n")
-            f.write(f"Variables: {{local_vars}}\\n")
-            f.write("---\\n")
+        report_file.write(f"Line {{lineno}}: {{line}}\\n")
+        report_file.write(f"Variables: {{local_vars}}\\n")
+        report_file.write("---\\n")
+        
     return custom_trace
-
 sys.settrace(custom_trace)
 """
 
     end_trace_code = """
 sys.settrace(None)
+report_file.close()
 """
 
     with open(script_path, 'w') as script_file:
