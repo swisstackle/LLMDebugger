@@ -60,9 +60,7 @@ def insert_trace_code(original_script: str, script_path: str, project_files: lis
 
     # Convert project file paths to absolute paths in a Python list format
     # Escape backslashes in paths by replacing '\' with '\\'
-    project_files_list = "[{}]".format(", ".join([
-        f"'{os.path.abspath(path).replace('\\', '\\\\')}'" for path in project_files
-    ]))
+    project_files_list = repr([os.path.abspath(path) for path in project_files])
 
     # Escape backslashes in report_path
     escaped_report_path = report_path.replace('\\', '\\\\')
